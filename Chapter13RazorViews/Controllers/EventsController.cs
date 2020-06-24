@@ -5,18 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.DependencyInjection;
+using Chapter13RazorViews.Models;
+using Chapter13RazorViews.Data;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace Chapter13RazorViews.Controllers
 {
     public class EventsController : Controller
     {
-        static private Dictionary<string, string> Events = new Dictionary<string, string>();
+        
 
         [HttpGet]
         public IActionResult Index()
         {                 
 
-            ViewBag.events = Events;
+            ViewBag.events = EventsData.GetAll();
 
             return View();
         }
@@ -27,14 +30,51 @@ namespace Chapter13RazorViews.Controllers
             return View();
         }
 
-        [HttpPost]
-        [Route("/Events/Add")]
-        public ActionResult NewEvent(string name, string desc)
+        [HttpPost("/Events/Add")]        
+        public IActionResult NewEvent(Event newEvent)
         {
-            Events.Add(name, desc);
+            EventsData.Add(newEvent);
             
             return Redirect("/Events");
-        }   
+        }
+
+        public IActionResult Delete()
+        {            
+            ViewBag.events = EventsData.GetAll();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int[] eventIds)
+        {
+            foreach (int eventId in eventIds)
+            {
+                EventsData.Remove(eventId);
+            }
+
+            return Redirect("/Events");
+        }
+
+
+        [HttpGet("/Events/Edit/{eventId}")]
+        public IActionResult Edit(int eventId)
+        {
+            ViewBag.edit = EventsData.GetById(eventId);
+            return View();
+        }
+
+        [HttpPost("/Events/Edit")]
+        public IActionResult SubmitEditEventForm(int eventId, string name, string description)
+        {           
+
+            Event newEdit = EventsData.GetById(eventId);
+
+            newEdit.Name = name;
+            newEdit.Description = description;
+
+            return Redirect("/Events");
+        }
 
 
     }

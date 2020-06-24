@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chapter13RazorViews", "Chapter13RazorViews\Chapter13RazorViews.csproj", "{404122A3-FBAE-4142-BD28-9A613CC86E36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chapter13RazorViews", "Chapter13RazorViews\Chapter13RazorViews.csproj", "{404122A3-FBAE-4142-BD28-9A613CC86E36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
