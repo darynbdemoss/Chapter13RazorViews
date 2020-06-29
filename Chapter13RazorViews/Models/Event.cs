@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Chapter13RazorViews.Models
@@ -10,6 +11,9 @@ namespace Chapter13RazorViews.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ContactEmail { get; set; }
+        public string EventLocation { get; set; }
+        public int NumberOfAttendees { get; set; }
         public int Id { get; }
         static private int nextId = 1;
 
@@ -19,10 +23,16 @@ namespace Chapter13RazorViews.Models
             nextId++;
         }
         
-        public Event(string name, string description) : this()
-        {            
+
+        public Event(string name, string description, string contactEmail, string eventLocation, int numberOfAttendees) : this()
+        {
             Name = name;
             Description = description;
+            ContactEmail = contactEmail;
+            EventLocation = eventLocation;
+            NumberOfAttendees = numberOfAttendees;
+            Id = nextId;
+            nextId++;
         }
 
         public override string ToString()

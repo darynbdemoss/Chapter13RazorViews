@@ -8,34 +8,46 @@ using Microsoft.Extensions.DependencyInjection;
 using Chapter13RazorViews.Models;
 using Chapter13RazorViews.Data;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Chapter13RazorViews.ViewModels;
 
 namespace Chapter13RazorViews.Controllers
 {
     public class EventsController : Controller
     {
-        
-
-        [HttpGet]
         public IActionResult Index()
-        {                 
+        {
+            List<Event> events = new List<Event>(EventsData.GetAll());
 
-            ViewBag.events = EventsData.GetAll();
-
-            return View();
+            return View(events);
         }
 
-        [HttpGet]
         public IActionResult Add()
         {
-            return View();
+            AddEventViewModel addEventViewModel = new AddEventViewModel();
+
+            return View(addEventViewModel);
         }
 
-        [HttpPost("/Events/Add")]        
-        public IActionResult NewEvent(Event newEvent)
+        [HttpPost]
+        public IActionResult Add(AddEventViewModel addEventViewModel)
         {
-            EventsData.Add(newEvent);
-            
-            return Redirect("/Events");
+            if (ModelState.IsValid)
+            {
+                Event newEvent = new Event
+                {
+                    Name = addEventViewModel.Name,
+                    Description = addEventViewModel.Description,
+                    ContactEmail = addEventViewModel.ContactEmail,
+                    EventLocation = addEventViewModel.EventLocation,
+                    NumberOfAttendees = addEventViewModel.NumberOfAttendees
+                };
+
+                EventsData.Add(newEvent);
+
+                return Redirect("/Events");
+            }
+
+            return View(addEventViewModel);
         }
 
         public IActionResult Delete()
@@ -65,13 +77,16 @@ namespace Chapter13RazorViews.Controllers
         }
 
         [HttpPost("/Events/Edit")]
-        public IActionResult SubmitEditEventForm(int eventId, string name, string description)
+        public IActionResult SubmitEditEventForm(int eventId, string name, string description, string contactEmail, string eventLocation, int numberOfAttendees)
         {           
 
             Event newEdit = EventsData.GetById(eventId);
 
             newEdit.Name = name;
             newEdit.Description = description;
+            newEdit.ContactEmail = contactEmail;
+            newEdit.EventLocation = eventLocation;
+            newEdit.NumberOfAttendees = numberOfAttendees;
 
             return Redirect("/Events");
         }

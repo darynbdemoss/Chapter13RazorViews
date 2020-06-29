@@ -1,11 +1,25 @@
-﻿<h1>Edit Event</h1>
+﻿@model Chapter13RazorViews.ViewModels.AddEventViewModel;
+<h1>Edit Event</h1>
 
 <form method="post" action="/events/edit">
     <div class="form-group">
+
         <label for="name">Name</label>
-        <input name="name" type="text" value="@ViewBag.edit.Name"/>
+        <input name="name" type="text" value="@ViewBag.edit.Name" />
+
         <label for="description">Description</label>
         <input name="description" value="@ViewBag.edit.Description" />
+
+        <label for="contactEmail">Contact Email</label>
+        <input name="contactEmail" value="@ViewBag.edit.ContactEmail" />
+
+        <label for="eventLocation">Event Location</label>
+        <input name="eventLocation" value="@ViewBag.edit.EventLocation" />
+
+        <label for="numberOfAttendees">Number Of Attendees</label>
+        <input name="numberOfAttendees" value="@ViewBag.edit.NumberOfAttendees" />
+
+
         <input type="hidden" value="@ViewBag.edit.Id" name="eventId" />
     </div>
     <input type="submit" value="Edit Event" />
