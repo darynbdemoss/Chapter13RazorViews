@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.Extensions.DependencyInjection;
 using Chapter13RazorViews.Models;
 using Chapter13RazorViews.Data;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Chapter13RazorViews.ViewModels;
+using System.Threading;
+using System.Linq;
 
 namespace Chapter13RazorViews.Controllers
 {
     public class EventsController : Controller
     {
+
+        private EventDbContext context;
+
+        public EventsController(EventDbContext dbContext)
+        {
+            context = dbContext;
+        }
+
         public IActionResult Index()
         {
-            List<Event> events = new List<Event>(EventsData.GetAll());
+            List<Event> events = context.Events.ToList();
 
             return View(events);
         }
@@ -42,7 +46,8 @@ namespace Chapter13RazorViews.Controllers
                     NumberOfAttendees = addEventViewModel.NumberOfAttendees
                 };
 
-                EventsData.Add(newEvent);
+                context.Events.Add(newEvent);
+                context.SaveChanges();
 
                 return Redirect("/Events");
             }
@@ -52,7 +57,7 @@ namespace Chapter13RazorViews.Controllers
 
         public IActionResult Delete()
         {            
-            ViewBag.events = EventsData.GetAll();
+            ViewBag.events = context.Events.ToList();
 
             return View();
         }
@@ -62,8 +67,11 @@ namespace Chapter13RazorViews.Controllers
         {
             foreach (int eventId in eventIds)
             {
-                EventsData.Remove(eventId);
+                Event theEvent = context.Events.Find(eventId);
+                context.Events.Remove(theEvent);
             }
+
+            context.SaveChanges();
 
             return Redirect("/Events");
         }
@@ -72,15 +80,17 @@ namespace Chapter13RazorViews.Controllers
         [HttpGet("/Events/Edit/{eventId}")]
         public IActionResult Edit(int eventId)
         {
-            ViewBag.edit = EventsData.GetById(eventId);
+            ViewBag.edit = context.Events.Find(eventId);
+            context.SaveChanges();
             return View();
+            
         }
 
         [HttpPost("/Events/Edit")]
         public IActionResult SubmitEditEventForm(int eventId, string name, string description, string contactEmail, string eventLocation, int numberOfAttendees)
         {           
 
-            Event newEdit = EventsData.GetById(eventId);
+            Event newEdit = context.Events.Find(eventId);
 
             newEdit.Name = name;
             newEdit.Description = description;
@@ -88,9 +98,11 @@ namespace Chapter13RazorViews.Controllers
             newEdit.EventLocation = eventLocation;
             newEdit.NumberOfAttendees = numberOfAttendees;
 
+            context.SaveChanges();
             return Redirect("/Events");
+            
         }
-
+        
 
     }
 }
