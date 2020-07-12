@@ -5,29 +5,33 @@ using Chapter13RazorViews.Data;
 using Chapter13RazorViews.ViewModels;
 using System.Threading;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chapter13RazorViews.Controllers
 {
     public class EventsController : Controller
     {
 
-        private EventDbContext context;
+        private EventDbContext _context;
 
         public EventsController(EventDbContext dbContext)
         {
-            context = dbContext;
+            _context = dbContext;
         }
 
         public IActionResult Index()
         {
-            List<Event> events = context.Events.ToList();
+            List<Event> events = _context.Events
+                .Include(e => e.Category)
+                .ToList();
 
             return View(events);
         }
 
         public IActionResult Add()
         {
-            AddEventViewModel addEventViewModel = new AddEventViewModel();
+            List<EventCategory> categories = _context.Categories.ToList();
+            AddEventViewModel addEventViewModel = new AddEventViewModel(categories);
 
             return View(addEventViewModel);
         }
@@ -37,17 +41,17 @@ namespace Chapter13RazorViews.Controllers
         {
             if (ModelState.IsValid)
             {
+                EventCategory category = _context.Categories.Find(addEventViewModel.CategoryId);
                 Event newEvent = new Event
                 {
                     Name = addEventViewModel.Name,
                     Description = addEventViewModel.Description,
                     ContactEmail = addEventViewModel.ContactEmail,
-                    EventLocation = addEventViewModel.EventLocation,
-                    NumberOfAttendees = addEventViewModel.NumberOfAttendees
+                    Category = category
                 };
 
-                context.Events.Add(newEvent);
-                context.SaveChanges();
+                _context.Events.Add(newEvent);
+                _context.SaveChanges();
 
                 return Redirect("/Events");
             }
@@ -57,7 +61,7 @@ namespace Chapter13RazorViews.Controllers
 
         public IActionResult Delete()
         {            
-            ViewBag.events = context.Events.ToList();
+            ViewBag.events = _context.Events.ToList();
 
             return View();
         }
@@ -67,11 +71,11 @@ namespace Chapter13RazorViews.Controllers
         {
             foreach (int eventId in eventIds)
             {
-                Event theEvent = context.Events.Find(eventId);
-                context.Events.Remove(theEvent);
+                Event theEvent = _context.Events.Find(eventId);
+                _context.Events.Remove(theEvent);
             }
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return Redirect("/Events");
         }
@@ -80,8 +84,8 @@ namespace Chapter13RazorViews.Controllers
         [HttpGet("/Events/Edit/{eventId}")]
         public IActionResult Edit(int eventId)
         {
-            ViewBag.edit = context.Events.Find(eventId);
-            context.SaveChanges();
+            ViewBag.edit = _context.Events.Find(eventId);
+            _context.SaveChanges();
             return View();
             
         }
@@ -90,7 +94,7 @@ namespace Chapter13RazorViews.Controllers
         public IActionResult SubmitEditEventForm(int eventId, string name, string description, string contactEmail, string eventLocation, int numberOfAttendees)
         {           
 
-            Event newEdit = context.Events.Find(eventId);
+            Event newEdit = _context.Events.Find(eventId);
 
             newEdit.Name = name;
             newEdit.Description = description;
@@ -98,7 +102,7 @@ namespace Chapter13RazorViews.Controllers
             newEdit.EventLocation = eventLocation;
             newEdit.NumberOfAttendees = numberOfAttendees;
 
-            context.SaveChanges();
+            _context.SaveChanges();
             return Redirect("/Events");
             
         }

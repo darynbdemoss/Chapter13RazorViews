@@ -22,6 +22,9 @@ namespace Chapter13RazorViews.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ContactEmail")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -39,6 +42,8 @@ namespace Chapter13RazorViews.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Events");
                 });
 
@@ -54,6 +59,15 @@ namespace Chapter13RazorViews.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Chapter13RazorViews.Models.Event", b =>
+                {
+                    b.HasOne("Chapter13RazorViews.Models.EventCategory", "Category")
+                        .WithMany("Events")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

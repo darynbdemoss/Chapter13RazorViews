@@ -32,9 +32,9 @@
         </th>
         <th>
             Number of Attendees
-        </th>
+        </th>        
         <th>
-            Edit
+            Category
         </th>
     </tr>
 
@@ -47,6 +47,7 @@
     <td>@evt.ContactEmail</td>
     <td>@evt.EventLocation</td>
     <td>@evt.NumberOfAttendees</td>
+    <td>@evt.Category.Name</td>
     <td><a asp-controller="Events" asp-action="Edit" asp-route-id="@evt.Id">Edit</a></td>
 </tr>
 
